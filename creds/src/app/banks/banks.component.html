@@ -1,0 +1,7 @@
+<div class="container-fluid text-center mt-3" style="min-height: 540px">
+        <h1>Welcome to The Great Digital Services! Thank You! Visit Again!</h1>
+        <img class="card-img my-5" src="/logo.png" />
+</div>
+<ng-container *ngIf="isBrowser && structuredDataSet">
+        <div [innerHTML]="structuredData"></div>
+</ng-container>

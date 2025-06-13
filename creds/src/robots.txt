@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://thegreatdigitalservices.com/sitemap.xml
