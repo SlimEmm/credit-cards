@@ -5,6 +5,9 @@ import { Router } from '@angular/router';
 import { environment } from '@environment';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { UtilService } from '../../services/util.service';
+import { CreditCards } from '../../models';
+import { SharedService } from '../../services/shared.service';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-home',
@@ -22,6 +25,7 @@ export class HomeComponent {
   structuredDataSet: boolean = false; // Add this property
   structuredData: SafeHtml | undefined;
   structuredDataJSON: any;
+  banks: CreditCards[] = [];
 
   constructor(
     private meta: Meta,
@@ -29,8 +33,12 @@ export class HomeComponent {
     private router: Router,
     public sanitizer: DomSanitizer,
     @Inject(PLATFORM_ID) private platformId: Object,
-    public _utilService: UtilService
+    public _utilService: UtilService,
+    private _sharedService: SharedService
   ) {
+    this._sharedService.getAccountDetails().subscribe((response)=>{
+      this.banks = _.uniqBy(response,'bank');
+    });
     this.baseUrlEnv = environment.baseUrl || '';
     this.isBrowser = isPlatformBrowser(this.platformId);
 

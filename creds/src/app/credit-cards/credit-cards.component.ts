@@ -1,14 +1,32 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { DomSanitizer, Meta, SafeHtml, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { environment } from '@environment';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import _ from 'lodash';
+import { CreditCards } from '../../models';
+import { SharedService } from '../../services/shared.service';
 import { UtilService } from '../../services/util.service';
 
 @Component({
   selector: 'app-credit-cards',
-  imports: [CommonModule, NgbTooltipModule],
+  imports: [
+    CommonModule,
+    NgbTooltipModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
   templateUrl: './credit-cards.component.html',
   styleUrl: './credit-cards.component.css',
 })
@@ -22,6 +40,8 @@ export class CreditCardsComponent {
   structuredDataSet: boolean = false; // Add this property
   structuredData: SafeHtml | undefined;
   structuredDataJSON: any;
+  banks: CreditCards[] = [];
+  searchForm: FormGroup;
 
   constructor(
     private meta: Meta,
@@ -29,8 +49,16 @@ export class CreditCardsComponent {
     private router: Router,
     public sanitizer: DomSanitizer,
     @Inject(PLATFORM_ID) private platformId: Object,
-    public _utilService: UtilService
+    public _utilService: UtilService,
+    private _sharedService: SharedService,
+    private fb: FormBuilder
   ) {
+    this.searchForm = this.fb.group({
+      name: [''],
+    });
+    this._sharedService.getAccountDetails().subscribe((response) => {
+      this.banks = _.orderBy(response, 'bank', 'desc');
+    });
     this.baseUrlEnv = environment.baseUrl || '';
     this.isBrowser = isPlatformBrowser(this.platformId);
 
@@ -40,6 +68,19 @@ export class CreditCardsComponent {
     }
   }
 
+  searching(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value || '';
+    this._sharedService.getAccountDetails().subscribe((response) => {
+      this.banks = _.orderBy(
+        response.filter((x) =>
+          x.name.toLowerCase().includes(value.toLowerCase())
+        ),
+        'bank',
+        'desc'
+      );
+    });
+  }
 
   ngOnInit() {
     this.url = this.router.url;

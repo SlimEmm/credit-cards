@@ -1,6 +1,27 @@
 <div class="container-fluid text-center mt-3" style="min-height: 540px">
-        <h1>Welcome to The Great Digital Services! Thank You! Visit Again!</h1>
-        <img class="card-img my-5" src="/logo.png" />
+        <h1>Welcome to The Great Credit Cards! Thank You! Visit Again!</h1>
+        <form [formGroup]="searchForm" novalidate="novalidate" autocomplete="off" class="d-flex justify-content-center">
+                <div class="row m-0 p-0">
+                        <mat-form-field class="bg-white w-100">
+                                <input placeholder="Search Credit Cards ..." formControlName="name" id="name" name="name"
+                                        matInput (keyup)="searching($event)">
+                        </mat-form-field>
+                </div>
+        </form>
+        <div class="row d-flex justify-content-center cursor-pointer my-3">
+                <div *ngFor="let bank of banks;"
+                        class="col-xl-5 col-lg-12 col-md-12 m-3 d-flex align-items-center justify-content-center border rounded-3 bg-dark p-0"
+                        style="min-height:250px">
+                        <a target="_blank" [href]="bank.affiliateLink">
+                                <!-- style="background-image: url('background-img.jpg'); background-position: center; background-repeat: no-repeat; background-size: cover;" -->
+                                <img class="card-img border border-1 rounded-3"
+                                        [src]="sanitizer.bypassSecurityTrustUrl(bank.imgUrl)" [alt]="bank.name" />
+                                <h4 class="w-100 text-white py-3">
+                                        <span class="text-warning">{{bank.name}}</span>
+                                </h4>
+                        </a>
+                </div>
+        </div>
 </div>
 <ng-container *ngIf="isBrowser && structuredDataSet">
         <div [innerHTML]="structuredData"></div>

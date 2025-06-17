@@ -42,6 +42,12 @@ export const routes: Routes = [
       import('./credit-cards/credit-cards.component').then((d) => d.CreditCardsComponent),
   },
   {
+    path: 'credit-cards/:id',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./credit-cards/credit-cards.component').then((d) => d.CreditCardsComponent),
+  },
+  {
     path: 'hostings',
     pathMatch: 'full',
     loadComponent: () =>
@@ -49,6 +55,12 @@ export const routes: Routes = [
   },
   {
     path: 'banks',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./banks/banks.component').then((d) => d.BanksComponent),
+  },
+   {
+    path: 'banks/:id',
     pathMatch: 'full',
     loadComponent: () =>
       import('./banks/banks.component').then((d) => d.BanksComponent),

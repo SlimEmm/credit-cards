@@ -1,8 +1,4 @@
-.card-img {
-  width: 740px;
-  height: 370px;
-  align-self: center;
-}
+
 .brand {
   font-size: 14px;
 }
@@ -39,3 +35,4 @@ mat-option {
   max-width: 150px;
   align-self: center;
 }
+
