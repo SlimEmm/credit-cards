@@ -9,7 +9,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DomSanitizer, Meta, SafeHtml, Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '@environment';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import _ from 'lodash';
@@ -42,6 +42,7 @@ export class CreditCardsComponent {
   structuredDataJSON: any;
   banks: CreditCards[] = [];
   searchForm: FormGroup;
+  searchTerm = '';
 
   constructor(
     private meta: Meta,
@@ -51,7 +52,8 @@ export class CreditCardsComponent {
     @Inject(PLATFORM_ID) private platformId: Object,
     public _utilService: UtilService,
     private _sharedService: SharedService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private route: ActivatedRoute
   ) {
     this.searchForm = this.fb.group({
       name: [''],
@@ -65,6 +67,36 @@ export class CreditCardsComponent {
     if (this.isBrowser && window) {
       // Safe to use window here
       this.screenWidth = window.innerWidth || 0;
+    }
+     this.structuredDataJSON = {
+      '@context': 'https://schema.org/',
+      '@type': 'ItemList',
+      provider: {
+        '@type': 'Organization',
+        name: 'The Great Digital Services',
+        url: `${environment?.baseUrl}/credit-cards`,
+      },
+      itemListElement: this.banks?.map((bank, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `${environment?.baseUrl}/credit-cards/${bank?.name || ''}`,
+        name: bank?.name || '',
+        bank: bank?.bank || '',
+        image: bank.imgUrl || environment?.baseUrl + '/logo.png',
+        logo: bank.logoUrl || environment?.baseUrl + '/logo.png',
+      })),
+      areaServed: {
+        '@type': 'Country',
+        name: 'India',
+      },
+    };
+     if (this.isBrowser) {
+      this.structuredData = this.sanitizer?.bypassSecurityTrustHtml(
+        `<script type="application/ld+json">${JSON.stringify(
+          this.structuredDataJSON
+        )}</script>`
+      );
+      this.structuredDataSet = true;
     }
   }
 
@@ -83,24 +115,32 @@ export class CreditCardsComponent {
   }
 
   ngOnInit() {
+    this.searchTerm = this.route.snapshot?.params?.['id'] || '';
+    this.searchForm.get('name')?.setValue(this.searchTerm);
     this.url = this.router.url;
-    this.title.setTitle(`Credit Cards - The Great Digital Services`);
+    this.title.setTitle(`${
+        this._utilService.toTitleCase(this.searchTerm) || ''
+      } Credit Cards - The Great Digital Services`);
     this.meta.updateTag({
       name: 'description',
       content: `Discover, Best Quality Digital Services, Credit Cards & Hosting Services At The Great Digital Services.`,
     });
     this.meta.updateTag({
       name: 'keywords',
-      content: `Contact, Discover, Find, Great, Latest, Today, Best, Quality, Digital, Hosting, Services, Buy, Online, Credit Cards.`,
+      content: `Contact, Discover, Find, Great, Latest, Today, Best, Quality, Digital, Hosting, Services, Buy, Online, Credit Cards, ${
+        this._utilService.toTitleCase(this.searchTerm) || ''
+      }`,
     });
     // Add Open Graph meta tags for social sharing
     this.meta.updateTag({
       property: 'og:title',
-      content: `The Great Digital Services`,
+      content: `${
+        this._utilService.toTitleCase(this.searchTerm) || ''
+      } Credit Cards - The Great Digital Services`,
     });
     this.meta.updateTag({
       property: 'og:description',
-      content: `Contact, Discover, Find, Great, Latest, Today, Best, Quality, Digital, Hosting, Services, Buy, Online, Credit Cards.`,
+      content: `Discover, Best Quality Digital Services, Credit Cards & Hosting Services At The Great Digital Services.`,
     });
     this.meta.updateTag({
       property: 'og:image',

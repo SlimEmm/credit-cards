@@ -38,8 +38,33 @@ export class HostingsComponent {
       // Safe to use window here
       this.screenWidth = window.innerWidth || 0;
     }
-  }
 
+    this.structuredDataJSON = {
+      '@context': 'https://schema.org/',
+      '@type': 'Service',
+      url: `${environment?.baseUrl}/hostings`,
+      name: 'Hostings',
+      image:
+        'https://cdn.grabon.in/gograbon/images/web-images/uploads/1735810325447/hostinger-coupon-codes%20.jpg',
+      provider: {
+        '@type': 'Organization',
+        name: 'The Great Digital Services',
+        url: `${environment?.baseUrl}/hostings`,
+      },
+      areaServed: {
+        '@type': 'Country',
+        name: 'India',
+      },
+    };
+    if (this.isBrowser) {
+      this.structuredData = this.sanitizer?.bypassSecurityTrustHtml(
+        `<script type="application/ld+json">${JSON.stringify(
+          this.structuredDataJSON
+        )}</script>`
+      );
+      this.structuredDataSet = true;
+    }
+  }
 
   ngOnInit() {
     this.url = this.router.url;
@@ -59,7 +84,7 @@ export class HostingsComponent {
     });
     this.meta.updateTag({
       property: 'og:description',
-      content: `Contact, Discover, Find, Great, Latest, Today, Best, Quality, Digital, Hosting, Services, Buy, Online, Credit Cards.`,
+      content: `Discover, Best Quality Digital Services, Credit Cards & Hosting Services At The Great Digital Services.`,
     });
     this.meta.updateTag({
       property: 'og:image',

@@ -10,5 +10,5 @@ import { FooterLinksComponent } from './footer-links/footer-links.component';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'creds';
+  title = 'The Great Digital Services';
 }

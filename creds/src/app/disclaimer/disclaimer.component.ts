@@ -28,7 +28,7 @@ export class DisclaimerComponent {
     });
     this.meta.updateTag({
       property: 'og:description',
-      content: `Disclaimer, Contact, Discover, Find, Great, Latest, Today, Best, Quality, Digital, Hosting, Services, Buy, Online, Credit Cards.`,
+      content: `Disclaimer - The Great Digital Services.`,
     });
     this.meta.updateTag({
       property: 'og:image',

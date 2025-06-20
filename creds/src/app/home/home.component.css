@@ -1,4 +1,8 @@
-
+.card-img {
+  width: 500px;
+  height: 250px;
+  align-self: center;
+}
 .brand {
   font-size: 14px;
 }

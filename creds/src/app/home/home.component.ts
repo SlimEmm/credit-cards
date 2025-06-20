@@ -4,10 +4,10 @@ import { DomSanitizer, Meta, SafeHtml, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { environment } from '@environment';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { UtilService } from '../../services/util.service';
+import * as _ from 'lodash';
 import { CreditCards } from '../../models';
 import { SharedService } from '../../services/shared.service';
-import * as _ from 'lodash';
+import { UtilService } from '../../services/util.service';
 
 @Component({
   selector: 'app-home',
@@ -36,18 +36,47 @@ export class HomeComponent {
     public _utilService: UtilService,
     private _sharedService: SharedService
   ) {
-    this._sharedService.getAccountDetails().subscribe((response)=>{
-      this.banks = _.uniqBy(response,'bank');
+    this._sharedService.getAccountDetails().subscribe((response) => {
+      this.banks = _.uniqBy(response, 'bank');
     });
+    this.structuredDataJSON = {
+      '@context': 'https://schema.org/',
+      '@type': 'ItemList',
+      provider: {
+        '@type': 'Organization',
+        name: 'The Great Digital Services',
+        url: `${environment?.baseUrl}`,
+      },
+      itemListElement: this.banks?.map((bank, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `${environment?.baseUrl}/banks/${bank?.bank || ''}`,
+        name: bank?.name || '',
+        bank: bank?.bank || '',
+        image: bank.imgUrl || environment?.baseUrl + '/logo.png',
+        logo: bank.logoUrl || environment?.baseUrl + '/logo.png',
+      })),
+      areaServed: {
+        '@type': 'Country',
+        name: 'India',
+      },
+    };
+
     this.baseUrlEnv = environment.baseUrl || '';
     this.isBrowser = isPlatformBrowser(this.platformId);
-
+    if (this.isBrowser) {
+      this.structuredData = this.sanitizer?.bypassSecurityTrustHtml(
+        `<script type="application/ld+json">${JSON.stringify(
+          this.structuredDataJSON
+        )}</script>`
+      );
+      this.structuredDataSet = true;
+    }
     if (this.isBrowser && window) {
       // Safe to use window here
       this.screenWidth = window.innerWidth || 0;
     }
   }
-
 
   ngOnInit() {
     this.url = this.router.url;
@@ -67,7 +96,7 @@ export class HomeComponent {
     });
     this.meta.updateTag({
       property: 'og:description',
-      content: `Contact, Discover, Find, Great, Latest, Today, Best, Quality, Digital, Hosting, Services, Buy, Online, Credit Cards.`,
+      content: 'Discover, Best Quality Digital Services, Credit Cards & Hosting Services At The Great Digital Services.',
     });
     this.meta.updateTag({
       property: 'og:image',
