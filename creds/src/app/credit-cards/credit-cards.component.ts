@@ -117,6 +117,17 @@ export class CreditCardsComponent {
   ngOnInit() {
     this.searchTerm = this.route.snapshot?.params?.['id'] || '';
     this.searchForm.get('name')?.setValue(this.searchTerm);
+    if(this.searchTerm) {
+      this._sharedService.getAccountDetails().subscribe((response) => {
+      this.banks = _.orderBy(
+        response.filter((x) =>
+          x.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+        ),
+        'bank',
+        'desc'
+      );
+    });
+    }
     this.url = this.router.url;
     this.title.setTitle(`${
         this._utilService.toTitleCase(this.searchTerm) || ''

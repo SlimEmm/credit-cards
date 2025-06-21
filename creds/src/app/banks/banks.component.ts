@@ -115,10 +115,20 @@ export class BanksComponent {
   ngOnInit() {
     this.searchTerm = this.route.snapshot?.params?.['id'] || '';
     this.searchForm.get('name')?.setValue(this.searchTerm);
+    if (this.searchTerm) {
+      this._sharedService.getAccountDetails().subscribe((response) => {
+        this.banks = response.filter((x) =>
+          x.bank.toLowerCase().includes(this.searchTerm.toLowerCase())
+        );
+        this.bankKeys = Object.keys(_.groupBy(this.banks, 'bank'));
+      });
+    }
     this.url = this.router.url;
-    this.title.setTitle(`${
+    this.title.setTitle(
+      `${
         this._utilService.toTitleCase(this.searchTerm) || ''
-      } Banks - The Great Digital Services`);
+      } Banks - The Great Digital Services`
+    );
     this.meta.updateTag({
       name: 'description',
       content: `Discover, Best Quality Digital Services, Credit Cards & Hosting Services At The Great Digital Services.`,
